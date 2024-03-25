@@ -1,0 +1,9 @@
+#Ignore all these files
+*.txt
+*.dat
+*.png
+*.pdf
+*.eps
+*.fits
+*.inp
+*.out
