@@ -7,3 +7,5 @@
 *.fits
 *.inp
 *.out
+*.specs
+*.rates
