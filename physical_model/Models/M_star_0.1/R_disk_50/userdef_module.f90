@@ -134,8 +134,8 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
     call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
     !now caculate flux
     allocate(userdef_flux(mysize))
-    userdef_flux = mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
-                   userdef_freqs(userdef_inu+1))
+    userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+                   userdef_freqs(userdef_inu+1)))/1.3d-4
     userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
     deallocate(userdef_flux)
   enddo
