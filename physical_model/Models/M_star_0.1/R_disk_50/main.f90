@@ -969,15 +969,15 @@ program radmc3d
         !
         ! Now call the monochromatic Monte Carlo
         !
-        !Changed by Pooneh                                                                                                             
-        call userdef_setup_model()
-!        call do_monte_carlo_scattering(rt_mcparams,ierror,   &
+        !changed by Pooneh
+        call userdef_setup_model(rt_mcparams,ierror)
+        !call do_monte_carlo_scattering(rt_mcparams,ierror,   &
         !       resetseed=do_resetseed,meanint=.true.)
-        !!!!!!!
-        ! Write the mean intensities to a file
         !
-        write(stdo,*) 'Writing mean intensity file...'
-        call write_meanint_to_file()
+        ! Write the mean intensities to a file
+        !Pooneh changed
+        write(stdo,*) 'Will not write mean intensity file...'
+        !call write_meanint_to_file()
      endif
      !
      !----------------------------------------------------------------
