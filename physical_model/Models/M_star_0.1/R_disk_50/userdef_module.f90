@@ -109,56 +109,45 @@ subroutine userdef_setup_model()
   integer :: userdef_nfreq, userdef_inu, userdef_i, mysize, myinu
   character*160 :: myfilename
   logical :: myfex
+  write(*,*) 'lalalallal hahahhahahah'
+  !call read_dustdata(1)
+  !call read_dust_density(1)
+  !call read_dust_temperature(1)
+  !write(*,*) 'lalalallal hahahhahahah'
+  !call read_mc_frequencies()
+  !write(*,*) 'lalalallal hahahhahahah'
+  call do_monte_carlo_scattering(rt_mcparams,0,resetseed=do_resetseed,meanint=.true.)
 
-  !
-  ! Deallocate frequencies
-  !
-  if(allocated(mc_frequencies)) deallocate(mc_frequencies)
-  !
-  ! Read frequencies / wavelengths from a file
-  !
-  inquire(file='mcmono_wavelength_micron.inp',exist=myfex)
-  if(myfex) then
-     open(unit=30,file='mcmono_wavelength_micron.inp')
-     read(30,*) mc_nrfreq
-     allocate(mc_frequencies(mc_nrfreq))
-     do myinu=1,mc_nrfreq
-        read(30,*) mc_frequencies(myinu)
-        mc_frequencies(myinu) = 1d4*cc/mc_frequencies(myinu)
-     enddo
-     close(30)
-  else
-     write(stdo,*) 'ERROR: Cannot find mcmono_wavelength_micron.inp'
-     stop
-  endif
-
-  userdef_freqs = mc_frequencies(:)
-  userdef_nfreq = mc_nrfreq
-  write(*,*) 'userdef_freqs'
-  write(*,*) userdef_freqs(:)
+  write(*,*) 'lalalallal hahahhahahah'
+  !userdef_freqs = mc_frequencies(:)
+  !userdef_nfreq = mc_nrfreq
+  !write(*,*) 'userdef_freqs'
+  !write(*,*) userdef_freqs(:)
 
   mysize = amr_grid_nx * amr_grid_ny * amr_grid_nz
   allocate(userdef_flux_int(mysize))
   userdef_flux_int = 0.
   write(*,*) 'userdef flux int are'
   write(*,*) userdef_flux_int(10)
-  deallocate(mc_frequencies)
+  !deallocate(mc_frequencies)
 
-  allocate(mc_frequencies(1))
-  do userdef_inu=1,userdef_nfreq-1
-    mc_frequencies = userdef_freqs(userdef_inu)
-    mc_nrfreq = 1
-    write(*,*) 'updated mc_frequencies lallalalallala'
-    write(*,*) mc_frequencies
+  !allocate(mc_frequencies(1))
+
+
+  !do userdef_inu=1,userdef_nfreq-1
+   ! mc_frequencies = userdef_freqs(userdef_inu)
+    !mc_nrfreq = 1
+    !write(*,*) 'updated mc_frequencies lallalalallala'
+    !write(*,*) mc_frequencies
         ! Now call the monochromatic Monte Carlo
         !
     !call do_monte_carlo_scattering(rt_mcparams,0,resetseed=do_resetseed, &
-     !                                    meanint=.true.)
+    !                               meanint=.true.)
         !now caculate flux
         !  userdef_flux(:) = mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu+1)- &
         !                                userdef_freqs(userdef_inu))
         !  userdef_flux_int(:) = userdef_flux_int(:) + userdef_flux(:)
-  enddo
+  !enddo
         !filename = 'userdef_total_flux.out'
         !open(unit=20, file= filename)
         !write(20,*) 2                                   ! Format number
@@ -170,7 +159,7 @@ subroutine userdef_setup_model()
 
 
   deallocate(userdef_flux_int)
-  deallocate(mc_frequencies)
+  !deallocate(mc_frequencies)
 
 end subroutine userdef_setup_model
 

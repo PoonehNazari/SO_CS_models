@@ -25,7 +25,7 @@ LFLAGS   = $(OPTIM)
 #
 # Names
 #
-SRCMAIN        = $(SRC)/main.f90
+SRCMAIN        = ./main.f90
 SRCRTGLOBAL    = $(SRC)/rtglobal_module.f90
 SRCMONTE       = $(SRC)/montecarlo_module.f90
 SRCDUST        = $(SRC)/dust_module.f90
