@@ -142,7 +142,7 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
   !Write total flux to file
   myfilename = 'userdef_total_flux.out'
   open(unit=20, file= myfilename)
-  write(20,*) 2             ! Format number
+  write(20,*) 2             !Format number
   write(20,*) size(userdef_flux_int)
   do userdef_i = 1, size(userdef_flux_int)
      write(20, *) userdef_flux_int(userdef_i)
