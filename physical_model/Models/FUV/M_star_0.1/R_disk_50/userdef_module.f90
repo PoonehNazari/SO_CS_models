@@ -115,7 +115,7 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
 
   userdef_freqs = mc_frequencies(:)
   userdef_nfreq = mc_nrfreq
-
+  
   mysize = amr_grid_nx * amr_grid_ny * amr_grid_nz
   allocate(userdef_flux_int(mysize))
   userdef_flux_int = 0.
@@ -133,13 +133,22 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
     userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
     deallocate(userdef_flux)
   enddo
+  mc_frequencies = userdef_freqs(userdef_inu)
+  mc_nrfreq = 1
+  call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
+  !now caculate flux                                                                                                                                                                
+  allocate(userdef_flux(mysize))
+  userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+       userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2                                                  
+  userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
+  deallocate(userdef_flux)
   !Write total flux to file
-  myfilename = 'userdef_total_flux.out'
+  myfilename = 'userdef_total_flux.out' 
   open(unit=20, file= myfilename)
   write(20,*) 2             !Format number
   write(20,*) size(userdef_flux_int)
   do userdef_i = 1, size(userdef_flux_int)
-     write(20, *) userdef_flux_int(userdef_i)
+     write(20, *) userdef_flux_int(userdef_i) !Units of G0
   enddo
   close(20)
 

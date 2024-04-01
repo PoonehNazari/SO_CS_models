@@ -11,19 +11,22 @@ use montecarlo_module
 use namelist_module
 
 !------------------------------------------------------------------------
-! Here you can define your own variables, arrays etc. 
+! Here you can define your own variables, arrays etc.
 !------------------------------------------------------------------------
 
-integer :: userdef_examplevariable      ! You can delete this, just an example
+
+double precision, allocatable :: userdef_freqs(:), userdef_flux(:), userdef_flux_int(:)
+integer :: userdef_nfreq, userdef_inu, userdef_i, mysize
+character*160 :: myfilename
 
 contains
 
 !------------------------------------------------------------------------
-! This subroutine allows you to specify defaults values for your 
+! This subroutine allows you to specify defaults values for your
 ! variables.
 !
 ! WARNING: In this subroutine you are not allowed to use write(stdo,*),
-!          because the stdo is not yet set. Reason: The defaults are 
+!          because the stdo is not yet set. Reason: The defaults are
 !          set before the command-line options are interpreted (so that
 !          the defaults can be overwritten by command-line options),
 !          but the stdo depends on whether the user calls RADMC-3D as
@@ -32,7 +35,7 @@ contains
 subroutine userdef_defaults()
   implicit none
   !
-  userdef_examplevariable = 0           ! You can delete this, just an example
+  !userdef_examplevariable = 0           ! You can delete this, just an example
   !
 end subroutine userdef_defaults
 
@@ -44,33 +47,7 @@ subroutine userdef_commandline(buffer,numarg,iarg,fromstdi,gotit)
   character*100 :: buffer
   integer :: iarg,numarg
   logical :: gotit,fromstdi
-  !
-  ! Below is just an example. You can delete or replace all of it.
-  !
-  if(buffer(1:16).eq.'examplecomlinopt') then
-     userdef_examplevariable = 1
-     gotit = .true.
-  elseif(buffer(1:21).eq.'examplecomlinargument') then
-     if(iarg.gt.numarg) then
-        write(stdo,*) 'ERROR while reading command line options: cannot read sizeau.'
-        write(stdo,*) '      Expecting 1 integer after examplecomlinargument.'
-        stop
-     endif
-     call ggetarg(iarg,buffer,fromstdi)
-     iarg = iarg+1
-     read(buffer,*) userdef_examplevariable
-     gotit = .true.
-  else
-     !
-     ! NOTE: It is useful to keep this, as it will stop RADMC-3D if the user 
-     !       accidently mistypes a command-line keyword instead of simply
-     !       ignoring it (and thus possibly leaving the user convinced he/she
-     !       did it right). 
-     !
-     write(stdo,*) 'ERROR: Could not recognize command line option ',trim(buffer)
-     stop
-  endif
-  !
+
 end subroutine userdef_commandline
 
 
@@ -95,14 +72,14 @@ subroutine userdef_parse_main_namelist()
   ! Note that the keyword name string should always have length 30,
   ! hence the many whitespaces.
   !
-  call parse_input_integer('examplekeyword@               ',userdef_examplevariable)
+  !call parse_input_integer('examplekeyword@               ',userdef_examplevariable)
   !
 end subroutine userdef_parse_main_namelist
 
 
 !------------------------------------------------------------------------
 ! Here you can do some post-processing after the radmc3d.inp namelist
-! reading. 
+! reading.
 !------------------------------------------------------------------------
 subroutine userdef_main_namelist_postprocessing()
   implicit none
@@ -125,18 +102,66 @@ end subroutine userdef_prep_model
 ! up. You can still modify the basic grid by adding more refinement, but
 ! to tell the AMR module to reserve space for more grid points you need
 ! to take matters into your own hand and create and init the base grid
-! yourself in the userdef_prep_model() routine above. 
+! yourself in the userdef_prep_model() routine above.
 ! No example given here, because it would interfere with basic operations.
 !------------------------------------------------------------------------
-subroutine userdef_setup_model()
+subroutine userdef_setup_model(rt_mcparams,ierror)
   implicit none
+  type(mc_params) :: rt_mcparams
+  integer, intent(in) :: ierror
+  double precision, allocatable :: userdef_freqs(:), userdef_flux(:), userdef_flux_int(:)
+  integer :: userdef_nfreq, userdef_inu, userdef_i, mysize
+  character*160 :: myfilename
+
+  userdef_freqs = mc_frequencies(:)
+  userdef_nfreq = mc_nrfreq
+  
+  mysize = amr_grid_nx * amr_grid_ny * amr_grid_nz
+  allocate(userdef_flux_int(mysize))
+  userdef_flux_int = 0.
+  deallocate(mc_frequencies)
+
+  allocate(mc_frequencies(1))
+  do userdef_inu=1,userdef_nfreq-1
+    mc_frequencies = userdef_freqs(userdef_inu)
+    mc_nrfreq = 1
+    call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
+    !now caculate flux
+    allocate(userdef_flux(mysize))
+    userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+                   userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2
+    userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
+    deallocate(userdef_flux)
+  enddo
+  mc_frequencies = userdef_freqs(userdef_inu)
+  mc_nrfreq = 1
+  call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
+  !now caculate flux                                                                                                                                                                
+  allocate(userdef_flux(mysize))
+  userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+       userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2                                                  
+  userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
+  deallocate(userdef_flux)
+  !Write total flux to file
+  myfilename = 'userdef_total_flux.out' 
+  open(unit=20, file= myfilename)
+  write(20,*) 2             !Format number
+  write(20,*) size(userdef_flux_int)
+  do userdef_i = 1, size(userdef_flux_int)
+     write(20, *) userdef_flux_int(userdef_i) !Units of G0
+  enddo
+  close(20)
+
+  deallocate(userdef_flux_int)
+  deallocate(mc_frequencies)
+
 end subroutine userdef_setup_model
 
 
 !------------------------------------------------------------------------
-! If you want to do some calculation for the model after the main 
+! If you want to do some calculation for the model after the main
 ! calculation, you can do it here. Here you can also write stuff to
-! file. 
+! file.
 !------------------------------------------------------------------------
 subroutine userdef_dostuff()
   implicit none
@@ -166,15 +191,15 @@ end subroutine userdef_compute_lorentz_delta
 
 
 !------------------------------------------------------------------------
-! If you have a good idea how to calculate the level populations 
+! If you have a good idea how to calculate the level populations
 ! of a molecule on-the-fly, you can do it here. But to activate it,
 ! you must put the line mode to -2.
 ! IMPORTANT NOTE: If you use the method of selecting a subset of the
 !                 levels of a molecule, then you must be very careful
 !                 in this subroutine to do it right. You must then use
 !                 the "active_***" arrays and variables in the line
-!                 module to figure out which levels are "active" and 
-!                 which are not. 
+!                 module to figure out which levels are "active" and
+!                 which are not.
 !------------------------------------------------------------------------
 subroutine userdef_compute_levelpop(ispec,nlevels,index,x,y,z, &
                                     numberdens,levelpop)
@@ -199,13 +224,13 @@ end subroutine userdef_general_compute_levelpop
 ! This subroutine allows you to specify exactly according to your own
 ! recipes/ideas the emissivity coefficient j_nu [erg/s/cm^3/Hz/ster]
 ! and extinction coefficient alpha_nu [1/cm] at the wavelengths given
-! and at the location given. 
+! and at the location given.
 !
 ! ARGUMENTS:
 !  index        The array index of the cell. This allows you to find
 !               e.g. the gas density gasdens(index) or the gas
 !               temperature gastemp(index) or any other quantity,
-!               provided it is read in into the code. 
+!               provided it is read in into the code.
 !  nrfreq       Nr of frequencies of the freq(:) array
 !  freq(:)      Array of frequencies [Hz]
 !  inu0,inu1    Starting/ending index: Calculate only src(inu0:inu1) and
@@ -216,7 +241,7 @@ end subroutine userdef_general_compute_levelpop
 !  alp(:)       Extinction [1/cm]
 !
 ! Note: To activate this, you must set incl_userdef_srcalp = 1 in the
-!       radmc3d.inp input file (in the code this is the logical 
+!       radmc3d.inp input file (in the code this is the logical
 !       rt_incl_userdef_srcalp from rtglobal_module.f90).
 !
 ! Note: By the time RADMC-3D call this code, it has already computed
@@ -236,9 +261,9 @@ subroutine userdef_srcalp(index,nrfreq,inu0,inu1,freq,src,alp)
   ! ! If the index.lt.1 then we are not in a cell
   ! !
   ! if(index.lt.1) return
-  ! ! 
-  ! ! Replace src with dummy emission 
-  ! !  
+  ! !
+  ! ! Replace src with dummy emission
+  ! !
   ! src(:,1) = gasdens(index)
   ! alp(:) = 1d-40
   ! !
@@ -249,12 +274,12 @@ end subroutine userdef_srcalp
 ! Here you can write model setup arrays (the stuff you have set up here
 ! in the userdef_module.f90) to standard RADMC-3D-readable files.
 ! This will only be done if radmc3d receives the 'writemodel' command
-! on the command line. 
+! on the command line.
 !------------------------------------------------------------------------
 subroutine userdef_writemodel()
   implicit none
-  call write_grid_file()
-  call write_dust_density()
+  !call write_grid_file()
+  !call write_dust_density()
 end subroutine userdef_writemodel
 
 
@@ -266,4 +291,3 @@ subroutine userdef_reset_flags()
 end subroutine userdef_reset_flags
 
 end module userdef_module
-

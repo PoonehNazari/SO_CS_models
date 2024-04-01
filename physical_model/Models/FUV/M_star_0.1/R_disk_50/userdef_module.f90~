@@ -14,8 +14,10 @@ use namelist_module
 ! Here you can define your own variables, arrays etc.
 !------------------------------------------------------------------------
 
-double precision, allocatable :: userdef_freqs(:), userdef_flux(:,:), userdef_flux_int(:,:)
+
+double precision, allocatable :: userdef_freqs(:), userdef_flux(:), userdef_flux_int(:)
 integer :: userdef_nfreq, userdef_inu, userdef_i, mysize
+character*160 :: myfilename
 
 contains
 
@@ -103,45 +105,59 @@ end subroutine userdef_prep_model
 ! yourself in the userdef_prep_model() routine above.
 ! No example given here, because it would interfere with basic operations.
 !------------------------------------------------------------------------
-subroutine userdef_setup_model()
+subroutine userdef_setup_model(rt_mcparams,ierror)
   implicit none
+  type(mc_params) :: rt_mcparams
+  integer, intent(in) :: ierror
   double precision, allocatable :: userdef_freqs(:), userdef_flux(:), userdef_flux_int(:)
   integer :: userdef_nfreq, userdef_inu, userdef_i, mysize
   character*160 :: myfilename
 
-  inquire(file='mcmono_wavelength_micron.inp',exist=fex)
-  if(fex) then
-     open(unit=1,file='mcmono_wavelength_micron.inp')
-     read(1,*) mc_nrfreq
-     allocate(mc_frequencies(mc_nrfreq),STAT=ierr)
-     if(ierr.ne.0) then
-        write(stdo,*) 'ERROR in montecarlo module: Could not allocate '
-        write(stdo,*) '      mc_frequencies(:).'
-        stop
-     endif
-     do inu=1,mc_nrfreq
-        read(1,*) mc_frequencies(inu)
-        mc_frequencies(inu) = 1d4*cc/mc_frequencies(inu)
-     enddo
-     close(1)
-  else
-     write(stdo,*) 'ERROR: Cannot find mcmono_wavelength_micron.inp'
-     stop
-  endif
-  ~
-
-!  call read_mc_frequencies()
-!  userdef_freqs = mc_frequencies(:)
-!  userdef_nfreq = mc_nrfreq
- ! write(*,*) 'userdef_freqs'
- ! write(*,*) userdef_freqs(:)
-
+  userdef_freqs = mc_frequencies(:)
+  userdef_nfreq = mc_nrfreq
+  
   mysize = amr_grid_nx * amr_grid_ny * amr_grid_nz
   allocate(userdef_flux_int(mysize))
-        userdef_flux_int = 0.
-        write(*,*) 'userdef flux int are'
-        write(*,*) userdef_flux_int(10)
+  userdef_flux_int = 0.
+  deallocate(mc_frequencies)
+
+  allocate(mc_frequencies(1))
+  do userdef_inu=1,userdef_nfreq-1
+    write(*,*) 'userdef_inu'
+    write(*,*) userdef_inu 
+    mc_frequencies = userdef_freqs(userdef_inu)
+    mc_nrfreq = 1
+    call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
+    !now caculate flux
+    allocate(userdef_flux(mysize))
+    userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+                   userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2
+    userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
+    deallocate(userdef_flux)
+  enddo
+  write(*,*) 'mc_freqs'
+  write(*,*) userdef_inu
+  mc_frequencies = userdef_freqs(userdef_inu+1)
+  mc_nrfreq = 1
+  call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
+  !now caculate flux                                                                                                                                                                
+  allocate(userdef_flux(mysize))
+  userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu+1) * (userdef_freqs(userdef_inu)- &
+       userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2                                                  
+  userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
+  deallocate(userdef_flux)
+  !Write total flux to file
+  myfilename = 'userdef_total_flux.out' 
+  open(unit=20, file= myfilename)
+  write(20,*) 2             !Format number
+  write(20,*) size(userdef_flux_int)
+  do userdef_i = 1, size(userdef_flux_int)
+     write(20, *) userdef_flux_int(userdef_i) !Units of G0
+  enddo
+  close(20)
+
   deallocate(userdef_flux_int)
+  deallocate(mc_frequencies)
 
 end subroutine userdef_setup_model
 
