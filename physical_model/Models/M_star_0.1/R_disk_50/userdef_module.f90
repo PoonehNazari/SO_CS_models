@@ -115,27 +115,21 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
 
   userdef_freqs = mc_frequencies(:)
   userdef_nfreq = mc_nrfreq
-  write(*,*) 'userdef_freqs'
-  write(*,*) userdef_freqs(:)
 
   mysize = amr_grid_nx * amr_grid_ny * amr_grid_nz
   allocate(userdef_flux_int(mysize))
   userdef_flux_int = 0.
-  write(*,*) 'userdef flux int are'
-  write(*,*) userdef_flux_int(10)
   deallocate(mc_frequencies)
 
   allocate(mc_frequencies(1))
   do userdef_inu=1,userdef_nfreq-1
     mc_frequencies = userdef_freqs(userdef_inu)
     mc_nrfreq = 1
-    write(*,*) 'updated mc_frequencies lallalalallala'
-    write(*,*) mc_frequencies
     call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
     !now caculate flux
     allocate(userdef_flux(mysize))
     userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
-                   userdef_freqs(userdef_inu+1)))/1.3d-4
+                   userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2
     userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
     deallocate(userdef_flux)
   enddo
