@@ -70,7 +70,7 @@ def write_dustsetup(M_star, L_bol, M_env, T_star, Phot, Nx, Ny, Mdisk, Rdisk, Rc
                     "scattering_mode_max='1', Tau='3.0', wbound='[0.0912, 7., 25., 1e4]', nw='[20,100,30]',epsilon = '0.2') \n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/dustkappa_silicate.inp .') \n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/mcmono_wavelength_micron.inp .')\n")
-        f1.write("os.system('radmc3d mctherm')")
+        f1.write("os.system('radmc3d mctherm')\n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/main.f90 .')\n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/userdef_module.f90 .')\n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/Makefile .')\n")
