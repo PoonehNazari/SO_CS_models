@@ -128,7 +128,7 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
     call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
     !now caculate flux
     allocate(userdef_flux(mysize))
-    userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
+    userdef_flux = (mcscat_meanint(1,:) * (userdef_freqs(userdef_inu)- &
                    userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2
     userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
     deallocate(userdef_flux)
@@ -138,8 +138,8 @@ subroutine userdef_setup_model(rt_mcparams,ierror)
   call do_monte_carlo_scattering(rt_mcparams,ierror,resetseed=.false.,meanint=.true.)
   !now caculate flux                                                                                                                                                                
   allocate(userdef_flux(mysize))
-  userdef_flux = (mcscat_meanint(1,:) * userdef_freqs(userdef_inu) * (userdef_freqs(userdef_inu)- &
-       userdef_freqs(userdef_inu+1)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2                                                  
+  userdef_flux = (mcscat_meanint(1,:) * (userdef_freqs(userdef_inu-1)- &
+       userdef_freqs(userdef_inu)))/1.3d-4  !G0, The 1.3e-4 erg s^-1 cm^-2 str^-1 is the same as 1.6e-3 erg s^-1 cm^-2                                                  
   userdef_flux_int = userdef_flux_int(:) + userdef_flux(:)
   deallocate(userdef_flux)
   !Write total flux to file

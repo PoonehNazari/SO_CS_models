@@ -34,7 +34,8 @@ data = np.swapaxes(data, 1, 2)
 
 plt.figure()
 c = plt.pcolormesh(r2 * np.sin(theta2), r2 * np.cos(theta2),
-    np.log10(data[:,:,0,0].T), cmap=cmap, vmax = 20,vmin=-4)
+    np.log10(data[:,:,0,0].T), cmap=cmap, vmax = 6,vmin=-4)
+plt.colorbar()
 plt.xlim(0,1000)
 plt.ylim(0,1000)
 plt.show()
