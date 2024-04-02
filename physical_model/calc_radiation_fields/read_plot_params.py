@@ -39,6 +39,8 @@ def give_grid_dens_temp_rad(M_star_dir):
     r2,theta2 = np.meshgrid(r/au,theta)
     dens_2d = a.rhodust[:,:,0,0].T * 100./(1.4* p_mas)
     temp_2d = a.dusttemp[:,:,0,0].T
+    dens_2d_write = a.rhodust[:,:,0,0] * 100./(1.4* p_mas)
+    temp_2d_write = a.dusttemp[:,:,0,0]
     dens_1d = a.rhodust[:,int(len(theta)/2),0,0] * 100./(1.4* p_mas)
     temp_1d = a.dusttemp[:,int(len(theta)/2),0,0]
     dens_1d_rand = a.rhodust[:,int(len(theta)/4),0,0] * 100./(1.4* p_mas)
@@ -55,9 +57,10 @@ def give_grid_dens_temp_rad(M_star_dir):
     rad_1d = rad[:,int(len(theta)/2),0,0]
     rad_1d_rand = rad[:,int(len(theta)/4),0,0]
     rad_2d = rad[:,:,0,0].T
+    rad_2d_write = rad[:,:,0,0]
     rad_2d[np.where(rad_2d==0.0000000000000000)] = 1e-100
 
-    return r/au, theta, r2, theta2,dens_1d, dens_1d_rand, dens_2d, temp_1d, temp_1d_rand, temp_2d, rad_1d, rad_1d_rand,rad_2d
+    return r/au, theta, r2, theta2,dens_1d, dens_1d_rand, dens_2d, temp_1d, temp_1d_rand, temp_2d, rad_1d, rad_1d_rand,rad_2d, dens_2d_write, temp_2d_write, rad_2d_write
 ###########
 ###########
 ###########
@@ -71,7 +74,7 @@ def plot_dens_temp_rad(M_star_dir,xlim_2d, ylim_2d,xlim_1d,ylim_1d_rad):
     row = 2
     col = 3
     fig,ax = plt.subplots(row,col,figsize=(24,12))
-    r, theta, r2, theta2,dens_1d, dens_1d_rand, dens_2d, temp_1d, temp_1d_rand, temp_2d, rad_1d, rad_1d_rand,rad_2d = give_grid_dens_temp_rad(M_star_dir)
+    r, theta, r2, theta2,dens_1d, dens_1d_rand, dens_2d, temp_1d, temp_1d_rand, temp_2d, rad_1d, rad_1d_rand,rad_2d, dens_2d_write, temp_2d_write, rad_2d_write = give_grid_dens_temp_rad(M_star_dir)
 
     dens_2d_masked = np.ma.masked_where(dens_2d<1.05e3,dens_2d)
     temp_2d_masked = np.ma.masked_where(dens_2d<1.05e3,temp_2d)
