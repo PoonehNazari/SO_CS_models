@@ -1,0 +1,37 @@
+! RADIATION FIELD PARAMETERS FOR PROTOPLANETARY DISK MODEL
+>>>>>>> Interstellar radiation field (ISM; erg cm-2 s-1)     
+1.600E-03
+>>>>>>> Interstellar radiation field (Habing; photons cm-2 s-1) 
+1.000E+08 
+>>>>>>> Cosmic-ray ionisation rate (s-1)
+5.000E-17
+>>>>>>> Cosmic-ray-induced UV photon flux (photons cm-2 s-1)
+1.000E+04
+>>>>>>> External radiation field (ISM/star; erg cm-2 s-1)
+0.000E+00
+>>>>>>> Total stellar FUV luminosity (photons s-1)
+1.43E+35
+>>>>>>> Total Lyman-alpha luminosity (photons s-1)
+0.000E+00
+>>>>>>> 
+
+Dark Clouds/     Lc  ~ 0.000E+00 erg s-1
+Disk Midplane    Lly ~ 0.000E+00 erg s-1
+
+T Tauri Star:    Lc  ~ 1.744E+30 erg s-1 
+                 Lly ~ 4.474E+30 erg s-1  
+
+Herbig Ae Star:  Lc  ~ 8.473E+32 erg s-1  
+                 Lly ~ 0.000E+00 erg s-1
+
+M Dwarf Star:    Lc  ~ 1.936E+28 erg s-1 
+                 Lly ~ 5.481E+28 erg s-1 
+                
+HM Protostar:    Lc  ~ 1.600E+37 erg s-1       
+                 Lly ~ 0.000E+00 erg s-1
+
+Irradiated disk: Gext ~ 6.400E+02 erg cm-2 s-1
+                 Lc   ~ 2.600E+31 erg s-1
+                 Lly  ~ 5.600E+31 erg s-1
+HD100546	1.43E+35
+HD97048		1.51e+35
