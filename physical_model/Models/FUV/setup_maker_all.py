@@ -65,7 +65,7 @@ def write_dustsetup(M_star, L_bol, M_env, T_star, Phot, Nx, Ny, Mdisk, Rdisk, Rc
                     "ny='"+str(grid_dict[M_star[i_star]]['ny'])+"',xbound='["+str(grid_dict[M_star[i_star]]['r_in'])+"*au,0.5*au,"+str(grid_dict[M_star[i_star]]['r_out'])+"*au]',"\
                     "r_fullenv='"+str(grid_dict[M_star[i_star]]['r_full'])+"*au',mgas='"+str(grid_dict[M_star[i_star]]['M_env'][0])+"*ms',r_in='"+str(grid_dict[M_star[i_star]]['r_in'])+"*au',"\
                     "prho='"+str(grid_dict[M_star[i_star]]['p'])+"', mstar='"+str(M_star[i_star])+"*ms', rstar='"+str(grid_dict[M_star[i_star]]['r_star'][0])+"*rs',"\
-                    "tstar='"+str(grid_dict[M_star[i_star]]['T_star'])+"', binary=False,"\
+                    "tstar='"+str(grid_dict[M_star[i_star]]['T_star'])+"', binary=False, ybound='[0.0, pi/2.]',"\
                     "Rc='"+str(grid_dict[M_star[i_star]]['r_c'])+"*au', rdisk='"+str(grid_dict[M_star[i_star]]['rdisk'])+"*au', mdisk='"+str(grid_dict[M_star[i_star]]['mdisk'])+"*ms',"\
                     "scattering_mode_max='1', Tau='3.0', wbound='[0.0912, 7., 25., 1e4]', nw='[20,100,30]',epsilon = '0.2') \n")
         f1.write("os.system('cp -v /Users/pooneh/Library/Mobile\ Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/physical_model/Models/FUV/datafiles/dustkappa_silicate.inp .') \n")
@@ -99,8 +99,8 @@ r_out = 200 #au
 r_full = 1e4 #au
 p = -1.5
 phot = 1000000 #Number of photons
-nx = '[100,200]' #grid points in x direction
-ny = 200 #grid points in y direction
+nx = '[50,150]' #grid points in x direction
+ny = 100 #grid points in y direction
 #########
 #Write your setup scripts
 write_dustsetup(m_star, l_bol, m_env, t_star, phot, nx, ny, mdisk, rdisk, r_c, r_in, r_out,r_full, p)

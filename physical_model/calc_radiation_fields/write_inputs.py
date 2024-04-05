@@ -10,7 +10,7 @@ def write_input(M_star_dir):
     f_list = []
     for i_bad in range(len(bad_r_array)):
         f_list.append([bad_r_array[i_bad],bad_theta_array[i_bad]])
-    myfile = open('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/input_points_'+M_star_dir+'.txt', 'w')
+    myfile = open('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/input_points_'+str(n_i)+'.txt', 'w')
     for i_r in range(len(r)):
         for i_theta in range(len(theta)):
             if [i_r,i_theta] in f_list:
