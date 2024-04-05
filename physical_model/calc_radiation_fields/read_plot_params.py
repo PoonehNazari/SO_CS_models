@@ -35,7 +35,7 @@ def give_grid_dens_temp_rad(M_star_dir):
     r    = a.grid.x[:]
     theta = a.grid.y[:]
     theta[0]=0.
-    theta[-1]=np.pi
+    theta[-1]=np.pi/2.
     r2,theta2 = np.meshgrid(r/au,theta)
     dens_2d = a.rhodust[:,:,0,0].T * 100./(1.4* p_mas)
     temp_2d = a.dusttemp[:,:,0,0].T
