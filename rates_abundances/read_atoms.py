@@ -2,8 +2,8 @@ import os
 
 ##########################################################################################
 ##########################################################################################
-def read_extract_specs():
-    myfile = open('rate12_full_atomic_v2.specs', 'r')
+def read_extract_specs(C_O):
+    myfile = open('rate12_C_O_'+str(C_O)+'.specs', 'r')
     lines = myfile.readlines()
     myfile.close()
     specs = []
@@ -13,7 +13,9 @@ def read_extract_specs():
         specs.append(second_column_value)
 
     specs_string = ' '.join(specs)
-    os.system('./time_evolution.pl ../outputs/output_dark_cloud.dat final_dark_cloud_abundances_pre_final_format 0 0 '+specs_string)
+    os.system('./time_evolution.pl ../outputs/output_dark_cloud_C_O_'+str(C_O)+'.dat final_dark_cloud_abundances_pre_final_format_C_O_'+str(C_O)+' 0 0 '+specs_string)
 ##########################################################################################
 ##########################################################################################
-read_extract_specs()
+C_O = [0.2,0.44,0.9,1.2,1.5]
+for i in range(len(C_O)):
+    read_extract_specs(C_O[i])
