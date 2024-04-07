@@ -16,3 +16,13 @@
 *.pd
 *.pi
 *.gp
+disk_inputmodel.f
+disk_main.f	
+disk_model
+dvode.f
+dvode_drive.f
+ismana.f
+photo_rates.f
+shielding.f
+xray_rates.f
+zeta_x.f
