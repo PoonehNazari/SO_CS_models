@@ -13,3 +13,6 @@
 *.mod
 *~
 *.DS_Store
+*.pd
+*.pi
+*.gp
