@@ -1,0 +1,34 @@
+! FILE PARAMETERS FOR PROTOPLANETARY DISK MODEL
+>>>>>>> Physical conditions input file   
+./../inputs/input_dark_cloud.txt
+>>>>>>> UV radiation field input files 
+'DEFAULT'
+>>>>>>> X-ray radiation field input
+'DEFAULT'
+>>>>>>> Reaction file
+./../rates_abundances/rate12_full_v2.rates
+>>>>>>> Species file
+./../rates_abundances/rate12_init_abunds.specs
+>>>>>>> Binding energies file
+./../rates_abundances/rate12_binding_v2.dat
+>>>>>>> Grain parameters file
+./grain_parameters.txt
+>>>>>>> Radiation field parameters file
+./radiation_parameters.txt
+>>>>>>> Reaction switch file
+./reaction_parameters.txt
+>>>>>>> Molecular abundances output file
+./../outputs/output_dark_cloud.dat
+>>>>>>> Reaction rates output file
+./../outputs/dark_cloud_rates.dat
+>>>>>>> Analyse output file
+./../outputs/dark_cloud_analyse.dat
+>>>>>>> First output time
+3.0E+00
+>>>>>>> Final output time
+3.0E+05
+>>>>>>> LOG_10(Ti+1) - LOG_10(Ti): time steps
+0.1
+>>>>>>> Time step for analyse subroutine (set to 0 if not called)
+62
+>>>>>>>  
