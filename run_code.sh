@@ -1,8 +1,10 @@
 # Save the starting directory
 start_dir=$(pwd)
 # Define directories
-M_dir=('M_star_0.1' 'M_star_0.5' 'M_star_1.0')
-C_O=('C_O_0.2' 'C_O_0.44' 'C_O_0.9' 'C_O_1.2' 'C_O_1.5')
+#M_dir=('M_star_0.1' 'M_star_0.5' 'M_star_1.0')
+M_dir=('M_star_0.5')
+#C_O=('C_O_0.2' 'C_O_0.44' 'C_O_0.9' 'C_O_1.2' 'C_O_1.5')
+C_O=('C_O_0.9' 'C_O_1.2' 'C_O_1.5')
 sub_grids=('grid_0' 'grid_1' 'grid_2' 'grid_3' 'grid_4')
 
 for i_star in "${!M_dir[@]}"; do

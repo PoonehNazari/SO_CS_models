@@ -3,7 +3,7 @@ import sys
 import read_plot_params as rd_mods
 import math
 import os
-
+import shutil
 
 def write_input(M_star_dir):
     r, theta, r2, theta2,dens_1d, dens_1d_rand, dens_2d, temp_1d, temp_1d_rand, temp_2d, rad_1d, rad_1d_rand,rad_2d, dens_2d_write, temp_2d_write, rad_2d_write = rd_mods.give_grid_dens_temp_rad(M_star_dir)
@@ -19,20 +19,23 @@ def write_input(M_star_dir):
             if [i_r,i_theta] in f_list:
                 print('bad index '+str(i_r)+'_'+str(i_theta))
             else:
-                string = f'{r[i_r]:.6f}'+'\t'+f'{theta[i_theta]:.6f}'+'\t'+f'{dens_2d_write[i_r,i_theta]:.6f}'+'\t'+f'{temp_2d_write[i_r,i_theta]:.6f}'+'\t'\
-                +f'{temp_2d_write[i_r,i_theta]:.6f}'+'\t'+f'{rad_2d_write[i_r,i_theta]:.6f}'+'\t'+f'{0.0:.6f}'+'\t'+f'{5E-17:.6f}'+'\t'+f'{0.0:.6f}'
+                string = '     '+f'{r[i_r]:.5e}'+'    '+f'{theta[i_theta]:.5e}'+'    '+f'{dens_2d_write[i_r,i_theta]:.5e}'+'    '+f'{temp_2d_write[i_r,i_theta]:.5e}'+'    '\
+                +f'{temp_2d_write[i_r,i_theta]:.5e}'+'    '+f'{rad_2d_write[i_r,i_theta]:.5e}'+'    '+f'{0.0:.5e}'+'    '+f'{5E-17:.5e}'+'    '+f'{0.0:.5e}'
                 all_strings.append(string)
 
-    if not os.path.exists('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/'):
+    if os.path.exists('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/'):
+        shutil.rmtree('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/')
         os.makedirs('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/')
-    n_files = math.ceil(len(all_strings)/3000.)
+    else:
+        os.makedirs('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/')
+    n_files = math.ceil(len(all_strings)/2600.)
     n = 0
     for i_file in range(n_files):
         myfile = open('/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/inputs/'+M_star_dir+'/input_points_'+str(i_file)+'.txt', 'w')
         n = n
         n_if = 0
         for i_n in np.arange(n,len(all_strings)):
-            if n_if < 3000:
+            if n_if < 2600:
                 myfile.write(all_strings[i_n]+'\n')
                 n = n+1
             n_if = n_if +1
