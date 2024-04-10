@@ -8,7 +8,7 @@ def write_specs_file(C_O):
     n = 0
     for i_line in range(len(lines)):
         parts = lines[i_line].split()
-        if parts[1]=='H2*': #This one for some reason was not transferred with time*.pl script (did teh check but every time you add a new C/O check if H2* is teh one and if it is zero in in the outputs dir)
+        if parts[1]=='H2*': #This one for some reason was not transferred with time*.pl script (did the check but every time you add a new C/O check if H2* is teh one and if it is zero in in the outputs dir)
             index = n
         n = n+1
 
