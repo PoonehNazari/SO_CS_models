@@ -1,0 +1,11 @@
+# Disk Chemistry Output 
+7.145748987854251e-13
+# overwriting_file.dat in GNUPLOT format produced by ./time_evolution.pl 
+ 
+# Time evolution of abundances for CS SO at radius = 4.001E-01 AU and height = 6.048E-01 AU 
+ 
+# TIME (YRS) 	H2 		He 		CS 	 	SO 	 	
+ 
+5.000E+00	1.000e+00	1.373e-07	7.463e-14	6.554e-15	
+5.000E+02	1.000e+00	2.185e-06	8.011e-14	2.362e-13	
+5.000E+04	1.000e+00	1.493e-05	2.635e-15	1.119e-15	
