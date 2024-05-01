@@ -50,8 +50,26 @@ class My_source:
         return new_r, new_z
 ###########################################################################
 ###########################################################################
+def fill_bad_pixels(data,grid_r, grid_z):
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if np.isnan(data[i, j]) and (grid_r[i, j] < 45) and (grid_z[i, j] < 30):
+                # Check left neighbor
+                if j > 0 and not np.isnan(data[i, j-1]):
+                    data[i, j] = data[i, j-1]
+                # Check right neighbor if left is not available
+                elif j < data.shape[1] - 1 and not np.isnan(data[i, j+1]):
+                    data[i, j] = data[i, j+1]
+                # elif i > 0 and not np.isnan(data[i-1, j]):
+                #     data[i, j] = data[i-1, j]
+                # # Try bottom neighbor
+                # elif i < data.shape[0] - 1 and not np.isnan(data[i+1, j]):
+                #     data[i, j] = data[i+1, j]
+    return data
+##########################################
+##########################################
 def read_output_data(M_star, C_O_ratio):
-    outputs = ['output_points_0.dat', 'output_points_1.dat', 'output_points_2.dat', 'output_points_3.dat', 'output_points_4.dat']
+    outputs = ['output_points_0.dat', 'output_points_1.dat', 'output_points_2.dat', 'output_points_3.dat']#, 'output_points_4.dat']
     home_dir = '/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/'
     r = []
     theta = []
@@ -72,22 +90,22 @@ def read_output_data(M_star, C_O_ratio):
                 theta.append(current_theta)
             elif line.startswith(' CS '):
                 parts_CS = line.split()
-                parts_CS = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CS]
+                parts_CS = ['1' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CS]
                 value_CS = [float(value_CS) for value_CS in parts_CS[1:-1]][-1]
                 CS.append(value_CS)
             elif line.startswith(' SO '):
                 parts_SO = line.split()
-                parts_SO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_SO]
+                parts_SO = ['1' if ('+1' in element) and ('E+1' not in element) else element for element in parts_SO]
                 value_SO = [float(value_SO) for value_SO in parts_SO[1:-1]][-1]
                 SO.append(value_SO)
             elif line.startswith(' C2H '):
                 parts_C2H = line.split()
-                parts_C2H = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C2H]
+                parts_C2H = ['1' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C2H]
                 value_C2H = [float(value_C2H) for value_C2H in parts_C2H[1:-1]][-1]
                 C2H.append(value_C2H)
             elif line.startswith(' HNCO '):
                 parts_HNCO = line.split()
-                parts_HNCO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_HNCO]
+                parts_HNCO = ['1' if ('+1' in element) and ('E+1' not in element) else element for element in parts_HNCO]
                 value_HNCO = [float(value_HNCO) for value_HNCO in parts_HNCO[1:-1]][-1]
                 HNCO.append(value_HNCO)
 
@@ -119,74 +137,56 @@ def plot_maps_write_CS_SO(M_star, C_O_ratio):
     SO =  source.SO
     C2H = source.C2H
     HNCO = source.HNCO
-    myfile = open('C_O_'+str(C_O_ratio)+'_'+M_star+'.dat','w')
-    myfile.write('r_cyl[au]\t z_cyl[au]\t CS/SO \t CS \t SO \n')
-    for i in range(len(new_r)):
-        myfile.write(str(new_r[i])+'\t'+str(new_z[i])+'\t'+str(CS_SO[i])+'\t'+str(CS[i])+'\t'+str(SO[i])+'\n')
-    myfile.close()
 
     cmap = plt.get_cmap('magma')
+    #cmap.set_bad(color = 'k')
     vmin = -14
     vmax = -7
-    fig,ax = plt.subplots(2,2,figsize=(15,12))
+    fig,ax = plt.subplots(1,3,figsize=(15,4))
     grid_r, grid_z = np.meshgrid(np.logspace(np.log10(min(new_r)),np.log10(max(new_r)),150),
                                 np.linspace(min(new_z),max(new_z),100))
+
+
     grid_C2H = griddata((new_r, new_z), np.log10(C2H), (grid_r, grid_z), method='linear')
-    grid_HNCO = griddata((new_r, new_z), np.log10(HNCO), (grid_r, grid_z), method='linear')
     grid_SO = griddata((new_r, new_z), np.log10(SO), (grid_r, grid_z), method='linear')
     grid_CS = griddata((new_r, new_z), np.log10(CS), (grid_r, grid_z), method='linear')
-    cax1 = ax[0,0].pcolormesh(grid_r, grid_z,grid_CS , cmap=cmap,vmin=vmin, vmax = vmax)
-    cax2 = ax[0,1].pcolormesh(grid_r, grid_z,grid_SO , cmap=cmap,vmin=vmin, vmax = vmax)
-    cax3 = ax[1,0].pcolormesh(grid_r, grid_z,grid_C2H , cmap=cmap,vmin=vmin, vmax = vmax)
-    cax4 = ax[1,1].pcolormesh(grid_r, grid_z,grid_HNCO , cmap=cmap,vmin=vmin, vmax = vmax)
-    ax[0,0].annotate('C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
-                  weight='bold',fontsize=18)
-    ax[1,0].set_xlabel('R [au]')
-    ax[1,1].set_xlabel('R [au]')
-    ax[0,0].set_ylabel('z [au]')
-    ax[1,0].set_ylabel('z [au]')
+    cax1 = ax[0].scatter(new_r, new_z, c=np.log10(C2H), cmap= cmap, vmin=vmin, vmax = vmax,marker='s',s=80)
+    cax2 = ax[1].scatter(new_r, new_z, c=np.log10(SO), cmap= cmap, vmin=vmin, vmax = vmax,marker='s',s=80)
+    cax3 = ax[2].scatter(new_r, new_z, c=np.log10(CS), cmap= cmap, vmin=vmin, vmax = vmax,marker='s',s=80)
+    #cax1 = ax[0].pcolormesh(grid_r, grid_z,grid_C2H , cmap=cmap,vmin=vmin, vmax = vmax)
+    #cax2 = ax[1].pcolormesh(grid_r, grid_z,grid_CS , cmap=cmap,vmin=vmin, vmax = vmax)
+    #cax3 = ax[2].pcolormesh(grid_r, grid_z,grid_SO , cmap=cmap,vmin=vmin, vmax = vmax)
+    #ax[0,0].annotate('C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
+    #              weight='bold',fontsize=18)
+    ax[0].set_xlabel('R [au]')
+    ax[1].set_xlabel('R [au]')
+    ax[2].set_xlabel('R [au]')
+    ax[0].set_ylabel('z [au]')
 
-    cb1 = fig.colorbar(cax1, ax=ax[0, 0])
-    cb1.set_label('CS')
-    cb2 = fig.colorbar(cax2, ax=ax[0, 1])
-    cb2.set_label('SO')
-    cb3 = fig.colorbar(cax3, ax=ax[1, 0])
-    cb3.set_label('C2H')
-    cb4 = fig.colorbar(cax4, ax=ax[1, 1])
-    cb4.set_label('HNCO')
+    cb1 = fig.colorbar(cax1, ax=ax[0])
+    cb1.set_label('log(C$_2$H)')
+    cb2 = fig.colorbar(cax2, ax=ax[1])
+    cb2.set_label('log(CS)')
+    cb3 = fig.colorbar(cax3, ax=ax[2])
+    cb3.set_label('log(SO)')
     plt.tight_layout()
-    plt.savefig('maps'+str(C_O_ratio)+'_'+str(M_star)+'.png')
+    plt.savefig('ALMA_proposal/maps'+str(C_O_ratio)+'_'+str(M_star)+'.png')
 
+    matplotlib.rcParams['font.size'] = 25
     plt.figure()
-    plt.scatter(new_r, new_z, c=np.log10(CS_SO), cmap= cmap, vmin=-2, vmax = 1,marker='s',s=80)
+    #grid_CS_SO = griddata((new_r, new_z), np.log10(CS_SO), (grid_r, grid_z), method='linear')
+    # Fill bad pixels
+    #filled_data = fill_bad_pixels(grid_CS_SO,grid_r, grid_z)
+    #plt.pcolormesh(grid_r, grid_z,filled_data , cmap=cmap,vmin=-3, vmax = 2)
+    plt.scatter(new_r, new_z, c=np.log10(CS_SO), cmap= cmap, vmin=-3, vmax = 3,marker='s',s=80)
     plt.annotate('C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
                   weight='bold',fontsize=18)
     plt.xlabel('R [au]')
     plt.ylabel('z [au]')
-    plt.colorbar(label='CS/SO')
+    plt.colorbar(label='log(CS/SO)')
     plt.tight_layout()
-    plt.savefig('map_C_O_'+str(C_O_ratio)+'_'+str(M_star)+'.png')
+    plt.savefig('ALMA_proposal/map_C_O_'+str(C_O_ratio)+'_'+str(M_star)+'_ALMA.png')
 
-    plt.figure()
-    plt.scatter(new_r, new_z, c=np.log10(HNCO_C2H), cmap= cmap, vmin=-2, vmax = 6,marker='s',s=80)
-    plt.annotate('C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
-                  weight='bold',fontsize=18)
-    plt.xlabel('R [au]')
-    plt.ylabel('z [au]')
-    plt.colorbar(label='HNCO/C2H')
-    plt.tight_layout()
-    plt.savefig('map_HNCO_C2H_'+str(C_O_ratio)+'_'+str(M_star)+'.png')
-
-    plt.figure()
-    grid_CS_SO = griddata((new_r, new_z), np.log10(CS_SO), (grid_r, grid_z), method='linear')
-    plt.pcolormesh(grid_r, grid_z,grid_CS_SO , cmap=cmap,vmin=-2, vmax = 1)
-    plt.annotate('C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
-                  weight='bold',fontsize=18)
-    plt.xlabel('R [au]')
-    plt.ylabel('z [au]')
-    plt.colorbar(label='CS/SO')
-    plt.tight_layout()
-    plt.savefig('map_C_O_'+str(C_O_ratio)+'_'+str(M_star)+'_interpolator.png')
 ###########################################################################
 ###########################################################################
 #########################MAIN##############################################
@@ -195,20 +195,3 @@ M_stars = ['M_star_0.5']
 for i_star in range(len(M_stars)):
     for i_ratios in range(len(C_O_ratios)):
         plot_maps_write_CS_SO(M_stars[i_star], C_O_ratios[i_ratios])
-
-# data_test = np.loadtxt(home_dir+'inputs/M_star_0.5/input_points_0.txt')
-# RAD = data_test[:,0]
-# THET = data_test[:,1]
-# RAD = [format(num, ".3e") for num in RAD]
-# THET = [format(num, ".3e") for num in THET]
-# test1 = np.column_stack((RAD, THET))
-# set_test1 = {tuple(row) for row in test1}
-#print(set_test1)
-
-# r = [format(num, ".3e") for num in r]
-# theta = [format(num, ".3e") for num in theta]
-# test2 = np.column_stack((r, theta))
-# set_test2 = {tuple(row) for row in test2}
-# #print(set_test2)
-# difference = np.array(list(set_test1 - set_test2))
-# #print(difference)
