@@ -23,48 +23,68 @@ import matplotlib.pylab as plt
 import os
 import sys
 from scipy.interpolate import griddata
+import re
 ###########################################################################
 #################################FUNCS/CLASSES#####################################
+def process_word_C(word):
+    # Regular expression to find 'C' optionally followed by a digit
+    pattern = r'C(\d?)'
+    matches = re.findall(pattern, word)
+
+    # Initialize sum
+    total = 0
+
+    # Process each match
+    for match in matches:
+        if match.isdigit():  # If there's a digit, add it as an integer
+            total += int(match)
+        else:  # If there's no digit, add 1 (for 'C' with no following digit)
+            total += 1
+
+    return total
+###########################################################################
+###########################################################################
+def process_word_O(word):
+    # Regular expression to find 'C' optionally followed by a digit
+    pattern = r'O(\d?)'
+    matches = re.findall(pattern, word)
+
+    # Initialize sum
+    total = 0
+
+    # Process each match
+    for match in matches:
+        if match.isdigit():  # If there's a digit, add it as an integer
+            total += int(match)
+        else:  # If there's no digit, add 1 (for 'C' with no following digit)
+            total += 1
+
+    return total
+###########################################################################
+###########################################################################
 class My_source:
-    def __init__(self, C_O, CO, C, CO2, CH4, CH3, O, O2, OH, NO, H2O, CS, SO, C2H2, H2CO, HCN, NH2CHO, C2H6, HNC, CH3NH2, C2H4, CN, C3, C3H, C3H2, CH3OH, CH3CCH , r, theta, Mstar):
+    def __init__(self, C_O, final_C, final_O , CS, SO, HNCO, CH3CN, r, theta, Mstar):
         self.C_O = C_O #input C/O
-        self.CO = CO
-        self.C   = C
-        self.CO2 = CO2
-        self.CH4   = CH4
-        self.CH3   = CH3
-        self.O   = O
-        self.O2   = O2
-        self.OH   = OH
-        self.NO   = NO
-        self.H2O   = H2O
+        self.final_C = final_C
+        self.final_O = final_O
         self.CS = CS
         self.SO = SO
-        self.C2H2 = C2H2
-        self.H2CO = H2CO
-        self.HCN = HCN
-        self.NH2CHO = NH2CHO
-        self.C2H6 = C2H6
-        self.HNC = HNC
-        self.CH3NH2  = CH3NH2
-        self.C2H4 = C2H4
-        self.CN  = CN
-        self.C3  = C3
-        self.C3H  = C3H
-        self.C3H2 = C3H2
-        self.CH3OH  = CH3OH
-        self.CH3CCH = CH3CCH
+        self.HNCO = HNCO
+        self.CH3CN = CH3CN
         self.r = r #array of radii
         self.theta = theta #array of theta
         self.Mstar = Mstar #the stellar mass
 
     def calc_C_O_ratio(self):
-        ratio = (self.CO + self.C + self.CO2 + self.CH4 + self.CH3 + self.C2H2 * 2 + self.H2CO + self.HCN + self.NH2CHO + self.C2H6*2 + self.HNC + self.CH3NH2 + self.C2H4*2 + self.CN + 3 * self.C3 +
-                3 * self.C3H + 3 * self.C3H2 + self.CH3OH + 3 * self.CH3CCH)/(self.CO + self.O + 2 * self.O2 + 2*self.CO2 + self.NO + self.H2O + self.H2CO + self.NH2CHO + self.CH3OH)
+        ratio = self.final_C/self.final_O
         return ratio
 
     def CS_SO(self):
         ratio = self.CS/self.SO
+        return ratio
+
+    def CH3CN_HNCO(self):
+        ratio = self.CH3CN/self.HNCO
         return ratio
 
     def convert_to_cylindrical(self):
@@ -74,97 +94,29 @@ class My_source:
 ###########################################################################
 ###########################################################################
 def read_output_data(M_star, C_O_ratio):
-    outputs = ['output_points_0.dat', 'output_points_1.dat', 'output_points_2.dat', 'output_points_3.dat']#, 'output_points_4.dat']
+    outputs = ['output_points_0.dat', 'output_points_1.dat', 'output_points_2.dat', 'output_points_3.dat', 'output_points_4.dat']
     home_dir = '/Users/pooneh/Library/Mobile Documents/com~apple~CloudDocs/Academic/ESO/projects/SO_CS_models/'
     r = []
     theta = []
-    CO = []
-    C = []
-    CO2 = []
-    CH4 = []
-    CH3 = []
-    O = []
-    O2 = []
-    OH = []
-    NO = []
-    H2O = []
+    sections = []
     CS = []
     SO = []
-    C2H2= []
-    H2CO= []
-    HCN= []
-    NH2CHO= []
-    C2H6= []
-    HNC= []
-    CH3NH2= []
-    C2H4= []
-    CN= []
-    C3= []
-    C3H= []
-    C3H2= []
-    CH3OH= []
-    CH3CCH= []
+    HNCO = []
+    CH3CN = []
     for i_output in range(len(outputs)):
         output = open(home_dir+'outputs/'+M_star+'/C_O_'+str(C_O_ratio)+'/'+outputs[i_output])
         lines_output = output.readlines()
         output.close()
+        current_section = []
+        collect = False
         for line in lines_output:
             if line.startswith(' RADIUS ='):
                 current_radius = float(line.split('=')[1].strip().split()[0])
                 r.append(current_radius)
+                collect = False
             elif line.startswith(' HEIGHT ='):
                 current_theta = float(line.split('=')[1].strip().split()[0])
                 theta.append(current_theta)
-            elif line.startswith(' CO '):
-                parts_CO = line.split()
-                parts_CO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CO]
-                value_CO = [float(value_CO) for value_CO in parts_CO[1:-1]][-1]
-                CO.append(value_CO)
-            elif line.startswith(' C '):
-                parts_C = line.split()
-                parts_C = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C]
-                value_C = [float(value_C) for value_C in parts_C[1:-1]][-1]
-                C.append(value_C)
-            elif line.startswith(' CO2 '):
-                parts_CO2 = line.split()
-                parts_CO2 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CO2]
-                value_CO2 = [float(value_CO2) for value_CO2 in parts_CO2[1:-1]][-1]
-                CO2.append(value_CO2)
-            elif line.startswith(' CH4 '):
-                parts_CH4 = line.split()
-                parts_CH4 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH4]
-                value_CH4 = [float(value_CH4) for value_CH4 in parts_CH4[1:-1]][-1]
-                CH4.append(value_CH4)
-            elif line.startswith(' CH3 '):
-                parts_CH3 = line.split()
-                parts_CH3 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH3]
-                value_CH3 = [float(value_CH3) for value_CH3 in parts_CH3[1:-1]][-1]
-                CH3.append(value_CH3)
-            elif line.startswith(' O '):
-                parts_O = line.split()
-                parts_O = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_O]
-                value_O = [float(value_O) for value_O in parts_O[1:-1]][-1]
-                O.append(value_O)
-            elif line.startswith(' O2 '):
-                parts_O2 = line.split()
-                parts_O2 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_O2]
-                value_O2 = [float(value_O2) for value_O2 in parts_O2[1:-1]][-1]
-                O2.append(value_O2)
-            elif line.startswith(' OH '):
-                parts_OH = line.split()
-                parts_OH = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_OH]
-                value_OH = [float(value_OH) for value_OH in parts_OH[1:-1]][-1]
-                OH.append(value_OH)
-            elif line.startswith(' NO '):
-                parts_NO = line.split()
-                parts_NO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_NO]
-                value_NO = [float(value_NO) for value_NO in parts_NO[1:-1]][-1]
-                NO.append(value_NO)
-            elif line.startswith(' H2O '):
-                parts_H2O = line.split()
-                parts_H2O = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_H2O]
-                value_H2O = [float(value_H2O) for value_H2O in parts_H2O[1:-1]][-1]
-                H2O.append(value_H2O)
             elif line.startswith(' CS '):
                 parts_CS = line.split()
                 parts_CS = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CS]
@@ -175,117 +127,66 @@ def read_output_data(M_star, C_O_ratio):
                 parts_SO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_SO]
                 value_SO = [float(value_SO) for value_SO in parts_SO[1:-1]][-1]
                 SO.append(value_SO)
+            elif line.startswith(' HNCO '):
+                parts_HNCO = line.split()
+                parts_HNCO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_HNCO]
+                value_HNCO = [float(value_HNCO) for value_HNCO in parts_HNCO[1:-1]][-1]
+                HNCO.append(value_HNCO)
+            elif line.startswith(' CH3CN '):
+                parts_CH3CN = line.split()
+                parts_CH3CN = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH3CN]
+                value_CH3CN = [float(value_CH3CN) for value_CH3CN in parts_CH3CN[1:-1]][-1]
+                CH3CN.append(value_CH3CN)
+            elif line.startswith(' *'):
+                # If current_section is not empty, add it to sections
+                if current_section:
+                    sections.append(current_section)
+                    current_section = []
+                # Set flag to true to start collecting lines after this
+                collect = True
+                continue  # Skip adding the 'RADIUS' line to the section
+            # Add line to the current section
+            if collect:
+                current_section.append(line.strip())
+            # Add the last section if not empty
+        if current_section:
+            sections.append(current_section)
 
+    final_C = []
+    final_O = []
+    for sect in sections:
+        carbons =[]
+        oxygens = []
+        for new_line in sect:
+            new_line = new_line.split()
+            new_line = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in new_line]
+            new_line = ['1E-20' if ('+2' in element) and ('E+2' not in element) else element for element in new_line]
+            if new_line != []:
+                value = float(new_line[-1])
+                if not new_line[0].startswith('G'):
+                    total_C = process_word_C(new_line[0])
+                    carbons.append(float(total_C) * value)
+                    total_O = process_word_O(new_line[0])
+                    oxygens.append(float(total_O) * value)
+        final_O.append(sum(oxygens))
+        #print(sum(oxygens))
+        final_C.append(sum(carbons))
 
-            elif line.startswith(' C2H2 '):
-                parts_C2H2 = line.split()
-                parts_C2H2 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C2H2]
-                value_C2H2 = [float(value_C2H2) for value_C2H2 in parts_C2H2[1:-1]][-1]
-                C2H2.append(value_C2H2)
-            elif line.startswith(' H2CO '):
-                parts_H2CO = line.split()
-                parts_H2CO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_H2CO]
-                value_H2CO = [float(value_H2CO) for value_H2CO in parts_H2CO[1:-1]][-1]
-                H2CO.append(value_H2CO)
-            elif line.startswith(' HCN '):
-                parts_HCN = line.split()
-                parts_HCN= ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_HCN]
-                value_HCN = [float(value_HCN) for value_HCN in parts_HCN[1:-1]][-1]
-                HCN.append(value_HCN)
-            elif line.startswith(' NH2CHO '):
-                parts_NH2CHO = line.split()
-                parts_NH2CHO = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_NH2CHO]
-                value_NH2CHO = [float(value_NH2CHO) for value_NH2CHO in parts_NH2CHO[1:-1]][-1]
-                NH2CHO.append(value_NH2CHO)
-            elif line.startswith(' C2H6 '):
-                parts_C2H6 = line.split()
-                parts_C2H6 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C2H6]
-                value_C2H6 = [float(value_C2H6) for value_C2H6 in parts_C2H6[1:-1]][-1]
-                C2H6.append(value_C2H6)
-            elif line.startswith(' HNC '):
-                parts_HNC = line.split()
-                parts_HNC = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_HNC]
-                value_HNC = [float(value_HNC) for value_HNC in parts_HNC[1:-1]][-1]
-                HNC.append(value_HNC)
-            elif line.startswith(' CH3NH2 '):
-                parts_CH3NH2 = line.split()
-                parts_CH3NH2 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH3NH2]
-                value_CH3NH2 = [float(value_CH3NH2) for value_CH3NH2 in parts_CH3NH2[1:-1]][-1]
-                CH3NH2.append(value_CH3NH2)
-            elif line.startswith(' C2H4 '):
-                parts_C2H4 = line.split()
-                parts_C2H4 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C2H4]
-                value_C2H4 = [float(value_C2H4) for value_C2H4 in parts_C2H4[1:-1]][-1]
-                C2H4.append(value_C2H4)
-            elif line.startswith(' CN '):
-                parts_CN = line.split()
-                parts_CN = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CN]
-                value_CN = [float(value_CN) for value_CN in parts_CN[1:-1]][-1]
-                CN.append(value_CN)
-            elif line.startswith(' C3 '):
-                parts_C3 = line.split()
-                parts_C3 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C3]
-                value_C3 = [float(value_C3) for value_C3 in parts_C3[1:-1]][-1]
-                C3.append(value_C3)
-            elif line.startswith(' C3H '):
-                parts_C3H = line.split()
-                parts_C3H = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C3H]
-                value_C3H = [float(value_C3H) for value_C3H in parts_C3H[1:-1]][-1]
-                C3H.append(value_C3H)
-            elif line.startswith(' C3H2 '):
-                parts_C3H2 = line.split()
-                parts_C3H2 = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_C3H2]
-                value_C3H2 = [float(value_C3H2) for value_C3H2 in parts_C3H2[1:-1]][-1]
-                C3H2.append(value_C3H2)
-            elif line.startswith(' CH3OH '):
-                parts_CH3OH = line.split()
-                parts_CH3OH = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH3OH]
-                value_CH3OH = [float(value_CH3OH) for value_CH3OH in parts_CH3OH[1:-1]][-1]
-                CH3OH.append(value_CH3OH)
-            elif line.startswith(' CH3CCH '):
-                parts_CH3CCH = line.split()
-                parts_CH3CCH = ['1E-20' if ('+1' in element) and ('E+1' not in element) else element for element in parts_CH3CCH]
-                value_CH3CCH = [float(value_CH3CCH) for value_CH3CCH in parts_CH3CCH[1:-1]][-1]
-                CH3CCH.append(value_CH3CCH)
-
-    CO = np.array(CO)
-    C = np.array(C)
-    CO2 = np.array(CO2)
-    CH4 = np.array(CH4)
-    CH3 = np.array(CH3)
-    O = np.array(O)
-    O2 = np.array(O2)
-    OH = np.array(OH)
-    NO = np.array(NO)
-    H2O = np.array(H2O)
-    CS = np.array(CS)
-    SO = np.array(SO)
-    C2H2= np.array(C2H2)
-    H2CO= np.array(H2CO)
-    HCN= np.array(HCN)
-    NH2CHO= np.array(NH2CHO)
-    C2H6= np.array(C2H6)
-    HNC= np.array(HNC)
-    CH3NH2= np.array(CH3NH2)
-    C2H4= np.array(C2H4)
-    CN= np.array(CN)
-    C3= np.array(C3)
-    C3H= np.array(C3H)
-    C3H2= np.array(C3H2)
-    CH3OH= np.array(CH3OH)
-    CH3CCH= np.array(CH3CCH)
+    final_C = np.array(final_C)
+    final_O = np.array(final_O)
     r = np.array(r)
     theta = np.array(theta)
+    CS = np.array(CS)
+    SO = np.array(SO)
+    HNCO = np.array(HNCO)
+    CH3CN = np.array(CH3CN)
     if len(theta) != len(r):
         print('ERROR the lengths are not the same something is not being found')
         sys.exit()
-    if len(OH) != len(CO2):
+    if len(theta) != len(final_O):
         print('ERROR the lengths are not the same something is not being found')
         sys.exit()
-    if len(r) != len(C):
-        print('ERROR the lengths are not the same something is not being found')
-        sys.exit()
-    source = My_source(C_O_ratio,CO, C, CO2, CH4, CH3, O, O2, OH, NO, H2O, CS, SO, C2H2, H2CO, HCN, NH2CHO, C2H6, HNC, CH3NH2, C2H4, CN, C3, C3H, C3H2, CH3OH, CH3CCH, r, theta, M_star)
+    source = My_source(C_O_ratio, final_C, final_O , CS, SO,HNCO, CH3CN, r, theta, M_star)
     return source
 ###########################################################################
 ###########################################################################
@@ -294,10 +195,11 @@ def plot_maps_write_CS_SO(M_star, C_O_ratio):
     new_r, new_z = source.convert_to_cylindrical()
     calc_C_O = source.calc_C_O_ratio()
     CS_SO = source.CS_SO()
+    CH3CN_HNCO = source.CH3CN_HNCO()
     myfile = open('calc_C_O_'+str(C_O_ratio)+'_'+M_star+'.dat','w')
-    myfile.write('r_cyl[au]\t z_cyl[au]\t C/O \t CS/SO \n')
+    myfile.write('r_cyl[au]\t z_cyl[au]\t C/O \t CS/SO \t CH3CN/HNCO \n')
     for i in range(len(new_r)):
-        myfile.write(str(new_r[i])+'\t'+str(new_z[i])+'\t'+str(calc_C_O[i])+'\t'+str(CS_SO[i])+'\n')
+        myfile.write(str(new_r[i])+'\t'+str(new_z[i])+'\t'+str(calc_C_O[i])+'\t'+str(CS_SO[i])+'\t'+str(CH3CN_HNCO[i])+'\n')
     myfile.close()
 
     cmap = plt.get_cmap('magma')
@@ -313,9 +215,10 @@ def plot_maps_write_CS_SO(M_star, C_O_ratio):
     plt.colorbar(label='CS/SO')
     plt.tight_layout()
     plt.savefig('map_CS_SO_'+str(C_O_ratio)+'_'+str(M_star)+'.png')
+    plt.close()
 
     plt.figure()
-    plt.scatter(new_r, new_z, c=calc_C_O, cmap= cmap, vmin=0.5, vmax = 1.7,marker='s',s=80)
+    plt.scatter(new_r, new_z, c=calc_C_O, cmap= cmap, vmin=0.01, vmax = 1.3,marker='s',s=80)
     plt.annotate('Initial C/O = '+str(C_O_ratio), xycoords='axes fraction', xy=(0.02,0.9),
                   weight='bold',fontsize=18)
     plt.xlabel('R [au]')
@@ -323,16 +226,19 @@ def plot_maps_write_CS_SO(M_star, C_O_ratio):
     plt.colorbar(label='C/O')
     plt.tight_layout()
     plt.savefig('map_C_O_'+str(C_O_ratio)+'_'+str(M_star)+'.png')
+    plt.close()
 
     plt.figure()
     plt.scatter(calc_C_O,CS_SO, c='k', s=20)
     plt.ylabel('CS/SO')
     plt.xlabel('C/O')
     plt.yscale('log')
-    plt.xscale('log')
+    #plt.xscale('log')
+    # plt.ylim(0.01,10)
     plt.xlim(0.1,2)
     plt.tight_layout()
     plt.savefig('C_O_CS_SO_'+str(C_O_ratio)+'_'+str(M_star)+'.png')
+    plt.close()
 ###########################################################################
 ###########################################################################
 #########################MAIN##############################################
