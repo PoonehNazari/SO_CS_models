@@ -1,0 +1,468 @@
+Writing problem_params.inp
+Writing problem_params.inp
+Writing dustopac.inp
+Reading amr_grid.inp
+Reading wavelength_micron.inp
+Reading dust_temperature.dat
+Luminosity[L_sun]= 8.999999999999996
+/Users/pooneh/Library/Python/3.9/lib/python/site-packages/radmc3dPy/models/disk_env_model_Pooneh_final_iter_scale_height.py:158: ComplexWarning: Casting complex values to real discards the imaginary part
+  CosTheta0 = float(roots[np.isreal(roots)][0])
+Writing wavelength_micron.inp
+Writing amr_grid.inp
+Writing stars.inp
+-------------------------------------------------------------
+Luminosities of radiation sources in the model :
+Reading wavelength_micron.inp
+As calculated from the input files :
+Stars : 
+  Star #0 + hotspot        : 3.494799e+34
+Continuous starlike source : 0.000000e+00
+ 
+-------------------------------------------------------------
+Writing dust_density.inp
+Writing radmc3d.inp
+  
+ ================================================================
+      WELCOME TO RADMC-3D: A 3-D CONTINUUM AND LINE RT SOLVER    
+                                                                 
+                          VERSION 2.0                            
+                                                                 
+                (c) 2008-2020 Cornelis Dullemond                 
+                                                                 
+       Please feel free to ask questions. Also please report     
+        bugs and/or suspicious behavior without hestitation.     
+      The reliability of this code depends on your vigilance!    
+                    dullemond@uni-heidelberg.de                  
+                                                                 
+   To keep up-to-date with bug-alarms and bugfixes, register to  
+                     the RADMC-3D forum:                         
+            http://radmc3d.ita.uni-heidelberg.de/phpbb/          
+                                                                 
+              Please visit the RADMC-3D home page at             
+  http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d/ 
+ ================================================================
+  
+ Note: T_gas taken to be equal to T_dust of dust species            1
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Note: Please be aware that you treat the star(s) as
+       point source(s) while using spherical coordinate mode.
+       Since R_*<<R_in this is probably OK, but if you want
+       to play safe, then set istar_sphere = 1 in radmc3d.inp.
+ Note: Star 1 is taken to be a blackbody star
+       at a temperature T = 4000. Kelvin
+ Grid information (current status):
+   We have 20500 branches, of which 20500 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading the heat source spatial distribution...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Reading dust data...
+ Note: Opacity file dustkappa_silicate.inp does not cover the 
+       complete wavelength range of the model (i.e. the range
+       in the file frequency.inp or wavelength_micron.inp).
+       Range of model:     lambda = [ 0.91E-01, 0.10E+05]
+       Range in this file: lambda = [ 0.10E+00, 0.10E+05]
+       Simple extrapolations are used to extend this range.
+ Reading dust densities...
+ Dust mass total =    3.0017419252747931E-004  Msun
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched OFF
+  
+ Starting the thermal Monte Carlo simulation....
+ Photon nr                   999
+ Photon nr                  1999
+ Photon nr                  2999
+ Photon nr                  3999
+ Photon nr                  4999
+ Photon nr                  5999
+ Photon nr                  6999
+ Photon nr                  7999
+ Photon nr                  8999
+ Photon nr                  9999
+ Photon nr                 10999
+ Photon nr                 11999
+ Photon nr                 12999
+ Photon nr                 13999
+ Photon nr                 14999
+ Photon nr                 15999
+ Photon nr                 16999
+ Photon nr                 17999
+ Photon nr                 18999
+ Photon nr                 19999
+ Photon nr                 20999
+ Photon nr                 21999
+ Photon nr                 22999
+ Photon nr                 23999
+ Photon nr                 24999
+ Photon nr                 25999
+ Photon nr                 26999
+ Photon nr                 27999
+ Photon nr                 28999
+ Photon nr                 29999
+ Photon nr                 30999
+ Photon nr                 31999
+ Photon nr                 32999
+ Photon nr                 33999
+ Photon nr                 34999
+ Photon nr                 35999
+ Photon nr                 36999
+ Photon nr                 37999
+ Photon nr                 38999
+ Photon nr                 39999
+ Photon nr                 40999
+ Photon nr                 41999
+ Photon nr                 42999
+ Photon nr                 43999
+ Photon nr                 44999
+ Photon nr                 45999
+ Photon nr                 46999
+ Photon nr                 47999
+ Photon nr                 48999
+ Photon nr                 49999
+ Photon nr                 50999
+ Photon nr                 51999
+ Photon nr                 52999
+ Photon nr                 53999
+ Photon nr                 54999
+ Photon nr                 55999
+ Photon nr                 56999
+ Photon nr                 57999
+ Photon nr                 58999
+ Photon nr                 59999
+ Photon nr                 60999
+ Photon nr                 61999
+ Photon nr                 62999
+ Photon nr                 63999
+ Photon nr                 64999
+ Photon nr                 65999
+ Photon nr                 66999
+ Photon nr                 67999
+ Photon nr                 68999
+ Photon nr                 69999
+ Photon nr                 70999
+ Photon nr                 71999
+ Photon nr                 72999
+ Photon nr                 73999
+ Photon nr                 74999
+ Photon nr                 75999
+ Photon nr                 76999
+ Photon nr                 77999
+ Photon nr                 78999
+ Photon nr                 79999
+ Photon nr                 80999
+ Photon nr                 81999
+ Photon nr                 82999
+ Photon nr                 83999
+ Photon nr                 84999
+ Photon nr                 85999
+ Photon nr                 86999
+ Photon nr                 87999
+ Photon nr                 88999
+ Photon nr                 89999
+ Photon nr                 90999
+ Photon nr                 91999
+ Photon nr                 92999
+ Photon nr                 93999
+ Photon nr                 94999
+ Photon nr                 95999
+ Photon nr                 96999
+ Photon nr                 97999
+ Photon nr                 98999
+ Photon nr                 99999
+ Photon nr                100999
+ Photon nr                101999
+ Photon nr                102999
+ Photon nr                103999
+ Photon nr                104999
+ Photon nr                105999
+ Photon nr                106999
+ Photon nr                107999
+ Photon nr                108999
+ Photon nr                109999
+ Photon nr                110999
+ Photon nr                111999
+ Photon nr                112999
+ Photon nr                113999
+ Photon nr                114999
+ Photon nr                115999
+ Photon nr                116999
+ Photon nr                117999
+ Photon nr                118999
+ Photon nr                119999
+ Photon nr                120999
+ Photon nr                121999
+ Photon nr                122999
+ Photon nr                123999
+ Photon nr                124999
+ Photon nr                125999
+ Photon nr                126999
+ Photon nr                127999
+ Photon nr                128999
+ Photon nr                129999
+ Photon nr                130999
+ Photon nr                131999
+ Photon nr                132999
+ Photon nr                133999
+ Photon nr                134999
+ Photon nr                135999
+ Photon nr                136999
+ Photon nr                137999
+ Photon nr                138999
+ Photon nr                139999
+ Photon nr                140999
+ Photon nr                141999
+ Photon nr                142999
+ Photon nr                143999
+ Photon nr                144999
+ Photon nr                145999
+ Photon nr                146999
+ Photon nr                147999
+ Photon nr                148999
+ Photon nr                149999
+ Photon nr                150999
+ Photon nr                151999
+ Photon nr                152999
+ Photon nr                153999
+ Photon nr                154999
+ Photon nr                155999
+ Photon nr                156999
+ Photon nr                157999
+ Photon nr                158999
+ Photon nr                159999
+ Photon nr                160999
+ Photon nr                161999
+ Photon nr                162999
+ Photon nr                163999
+ Photon nr                164999
+ Photon nr                165999
+ Photon nr                166999
+ Photon nr                167999
+ Photon nr                168999
+ Photon nr                169999
+ Photon nr                170999
+ Photon nr                171999
+ Photon nr                172999
+ Photon nr                173999
+ Photon nr                174999
+ Photon nr                175999
+ Photon nr                176999
+ Photon nr                177999
+ Photon nr                178999
+ Photon nr                179999
+ Photon nr                180999
+ Photon nr                181999
+ Photon nr                182999
+ Photon nr                183999
+ Photon nr                184999
+ Photon nr                185999
+ Photon nr                186999
+ Photon nr                187999
+ Photon nr                188999
+ Photon nr                189999
+ Photon nr                190999
+ Photon nr                191999
+ Photon nr                192999
+ Photon nr                193999
+ Photon nr                194999
+ Photon nr                195999
+ Photon nr                196999
+ Photon nr                197999
+ Photon nr                198999
+ Photon nr                199999
+ Photon nr                200999
+ Photon nr                201999
+ Photon nr                202999
+ Photon nr                203999
+ Photon nr                204999
+ Photon nr                205999
+ Photon nr                206999
+ Photon nr                207999
+ Photon nr                208999
+ Photon nr                209999
+ Photon nr                210999
+ Photon nr                211999
+ Photon nr                212999
+ Photon nr                213999
+ Photon nr                214999
+ Photon nr                215999
+ Photon nr                216999
+ Photon nr                217999
+ Photon nr                218999
+ Photon nr                219999
+ Photon nr                220999
+ Photon nr                221999
+ Photon nr                222999
+ Photon nr                223999
+ Photon nr                224999
+ Photon nr                225999
+ Photon nr                226999
+ Photon nr                227999
+ Photon nr                228999
+ Photon nr                229999
+ Photon nr                230999
+ Photon nr                231999
+ Photon nr                232999
+ Photon nr                233999
+ Photon nr                234999
+ Photon nr                235999
+ Photon nr                236999
+ Photon nr                237999
+ Photon nr                238999
+ Photon nr                239999
+ Photon nr                240999
+ Photon nr                241999
+ Photon nr                242999
+ Photon nr                243999
+ Photon nr                244999
+ Photon nr                245999
+ Photon nr                246999
+ Photon nr                247999
+ Photon nr                248999
+ Photon nr                249999
+ Photon nr                250999
+ Photon nr                251999
+ Photon nr                252999
+ Photon nr                253999
+ Photon nr                254999
+ Photon nr                255999
+ Photon nr                256999
+ Photon nr                257999
+ Photon nr                258999
+ Photon nr                259999
+ Photon nr                260999
+ Photon nr                261999
+ Photon nr                262999
+ Photon nr                263999
+ Photon nr                264999
+ Photon nr                265999
+ Photon nr                266999
+ Photon nr                267999
+ Photon nr                268999
+ Photon nr                269999
+ Photon nr                270999
+ Photon nr                271999
+ Photon nr                272999
+ Photon nr                273999
+ Photon nr                274999
+ Photon nr                275999
+ Photon nr                276999
+ Photon nr                277999
+ Photon nr                278999
+ Photon nr                279999
+ Photon nr                280999
+ Photon nr                281999
+ Photon nr                282999
+ Photon nr                283999
+ Photon nr                284999
+ Photon nr                285999
+ Photon nr                286999
+ Photon nr                287999
+ Photon nr                288999
+ Photon nr                289999
+ Photon nr                290999
+ Photon nr                291999
+ Photon nr                292999
+ Photon nr                293999
+ Photon nr                294999
+ Photon nr                295999
+ Photon nr                296999
+ Photon nr                297999
+ Photon nr                298999
+ Photon nr                299999
+ Photon nr                300999
+ Photon nr                301999
+ Photon nr                302999
+ Photon nr                303999
+ Photon nr                304999
+ Photon nr                305999
+ Photon nr                306999
+ Photon nr                307999
+ Photon nr                308999
+ Photon nr                309999
+ Photon nr                310999
+ Photon nr                311999
+ Photon nr                312999
+ Photon nr                313999
+ Photon nr                314999
+ Photon nr                315999
+ Photon nr                316999
+ Photon nr                317999
+ Photon nr                318999
+ Photon nr                319999
+ Photon nr                320999
+ Photon nr                321999
+ Photon nr                322999
+ Photon nr                323999
+ Photon nr                324999
+ Photon nr                325999
+ Photon nr                326999
+ Photon nr                327999
+ Photon nr                328999
+ Photon nr                329999
+ Photon nr                330999
+ Photon nr                331999
+ Photon nr                332999
+ Photon nr                333999
+ Photon nr                334999
+ Photon nr                335999
+ Photon nr                336999
+ Photon nr                337999
+ Photon nr                338999
+ Photon nr                339999
+ Photon nr                340999
+ Photon nr                341999
+ Photon nr                342999
+ Photon nr                343999
+ Photon nr                344999
+ Photon nr                345999
+ Photon nr                346999
+ Photon nr                347999
+ Photon nr                348999
+ Photon nr                349999
+ Photon nr                350999
+ Photon nr                351999
+ Photon nr                352999
+ Photon nr                353999
+ Photon nr                354999
+ Photon nr                355999
+ Photon nr                356999
+ Photon nr                357999
+ Photon nr                358999
+ Photon nr                359999
+ Photon nr                360999
+ Photon nr                361999
+ Photon nr                362999
+ Photon nr                363999
+ Photon nr                364999
+ Photon nr                365999
+ Photon nr                366999
+ Photon nr                367999
+ Photon nr                368999
+ Photon nr                369999
+ Photon nr                370999
+ Photon nr                371999
+ Photon nr                372999
+ Photon nr                373999
+ Photon nr                374999
+ Photon nr                375999
+ Photon nr                376999
+ Photon nr                377999
+ Photon nr                378999
+ Photon nr                379999
+ Photon nr                380999
+ Photon nr                381999
+ Photon nr                382999
+ Photon nr                383999
+ Photon nr                384999
+ Photon nr                385999
+ Photon nr                386999
+ Photon nr                387999
+ Photon nr                388999
+ Photon nr                389999
+ Photon nr                390999
+ Photon nr                391999
